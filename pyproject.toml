@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scorebench-cli"
+version = "0.1.0"
+description = "Agent CLI for ScoreBench (Harness) middleware servers: scoped runs, submissions, and read-only venue views."
+requires-python = ">=3.10"
+dependencies = []
+license = { text = "MIT" }
+
+[project.scripts]
+scorebench = "scorebench_cli.cli:main"
+harness = "scorebench_cli.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["scorebench_cli*"]
