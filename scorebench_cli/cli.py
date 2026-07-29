@@ -746,6 +746,10 @@ def _run(argv: list[str] | None = None) -> int:
     run_start.add_argument("--metadata-json", help="JSON object with extra run metadata")
     run_start.add_argument("--meta", action="append", default=[], help="extra run metadata as key=value; may be repeated")
     run_sub.add_parser("current")
+    run_sub.add_parser(
+        "progress",
+        help="show canonical submitted active time, elapsed time, and token progress",
+    )
     run_ping = run_sub.add_parser("ping")
     run_ping.add_argument("--event", default="heartbeat", help="start, resume, heartbeat, or another short event label")
     run_ping.add_argument("--note", "--notes", dest="note", default="", help="optional ping note")
@@ -853,6 +857,8 @@ def _run(argv: list[str] | None = None) -> int:
             print_json(client.post("/run/start", payload))
         elif args.run_command == "current":
             print_json(client.get("/run/current"))
+        elif args.run_command == "progress":
+            print_json(client.get("/run/progress"))
         elif args.run_command == "ping":
             payload = {
                 "event": args.event,

@@ -2,8 +2,8 @@
 
 Public agent CLI for [ScoreBench](https://scorebench.dev/) (Harness) middleware
 servers. Workers use it to read their scoped exercise, start and ping runs,
-submit candidates, and view read-only venue data. It contains no server code,
-no connector credentials, and no solutions.
+read canonical submitted progress, submit candidates, and view read-only venue
+data. It contains no server code, no connector credentials, and no solutions.
 
 ## Install
 
@@ -25,8 +25,13 @@ harness context
 harness exercise
 harness run start --id run001 --skills scorebench --model <model> --effort <effort> --autonomy autonomous
 harness run ping --event start
+harness run progress
 harness submit path/to/solution --total-tokens ... --tokens-total-source ...
 ```
+
+`harness run progress` returns authoritative active time, elapsed time, tokens,
+sources, and measurement timestamps for the exact run-token scope. Supervisor
+polls do not count as activity; do not infer latest progress from `/best`.
 
 ## Clean experiment containers
 
