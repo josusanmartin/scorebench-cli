@@ -57,3 +57,10 @@ def test_run_progress_calls_scoped_endpoint():
     )
     client.get.assert_called_once_with("/run/progress")
     assert json.loads(output.getvalue())["progress"]["active_seconds"] == 10
+
+
+def test_browser_safe_url_only_admits_https_or_loopback_http():
+    assert cli._browser_safe_url("https://scorebench.dev/admin/cli-login")
+    assert cli._browser_safe_url("http://127.0.0.1:8000/admin/cli-login")
+    for url in ("http://scorebench.dev/login", "javascript:alert(1)", "file:///etc/passwd", "https://[bad"):
+        assert not cli._browser_safe_url(url)

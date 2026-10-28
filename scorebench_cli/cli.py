@@ -11,6 +11,7 @@ import shlex
 import subprocess
 import sys
 import time
+import urllib.parse
 import webbrowser
 
 from .bundles import create_bundle
@@ -450,6 +451,16 @@ def refresh_admin_profile_metadata(profile: HarnessAdminProfile, context: dict) 
         save_admin_config(config)
 
 
+def _browser_safe_url(url: str) -> bool:
+    """Only auto-open server-supplied HTTPS URLs (plain HTTP for a loopback dev server)."""
+    try:
+        parts = urllib.parse.urlsplit(url)
+        host = parts.hostname
+    except ValueError:
+        return False
+    return bool(host) and (parts.scheme == "https" or (parts.scheme == "http" and host in {"127.0.0.1", "localhost", "::1"}))
+
+
 def browser_admin_login(args) -> dict:
     client = HarnessClient(args.url)
     created = client.post("/api/admin/cli-login/start", {})
@@ -459,7 +470,9 @@ def browser_admin_login(args) -> dict:
 
     print("Open this URL to authorize Harness CLI login:", file=sys.stderr)
     print(authorize_url, file=sys.stderr)
-    if not args.no_browser:
+    if not args.no_browser and not _browser_safe_url(authorize_url):
+        print("Not opening a non-HTTPS login URL automatically; check it before opening it manually.", file=sys.stderr)
+    elif not args.no_browser:
         try:
             webbrowser.open(authorize_url)
         except Exception:
